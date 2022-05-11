@@ -41,8 +41,8 @@ task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
       url: "https://rinkeby.infura.io/v3/91465883a5884c6db5b2154a4aa0f971", //Infura url with projectId
       accounts: ["b295b159886341657a5427a9ac5ff4c41c73a42a3d667d31e8f53ba9e548727e"] // add the account that will deploy the contract (private key)
      },
-     kovan: {
-      url: "https://kovan.infura.io/v3/91465883a5884c6db5b2154a4aa0f971",
+     bsct: {
+      url: "https://data-seed-prebsc-1-s1.binance.org/",
       accounts: ["b295b159886341657a5427a9ac5ff4c41c73a42a3d667d31e8f53ba9e548727e"] 
     },
    }

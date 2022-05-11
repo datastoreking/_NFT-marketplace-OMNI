@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import SwitchNetwork from './SwitchNetwork'
 import Aos from 'aos';
 import 'aos/dist/aos.css';
-import AdvancedONT from '../services/abis/AdvancedONT.json'
+import CaveatNFT from '../services/abis/Caveat.json'
 
 import { useActiveWeb3React } from '../hooks/useWeb3'
 import { getContract } from '../utils/contracts'
@@ -18,70 +18,30 @@ import { Slide, Zoom, Flip, Bounce } from 'react-toastify';
 
 
 const injected = new InjectedConnector({
-  supportedChainIds: [4, 97, 43113, 80001, 421611, 4002, 69]
+  supportedChainIds: [4, 69]
 })
 
 const addresses = {
   '4': {
-    address: '0xC8759D18D5c96cce77074249330b9b41A618e51A',
+    address: '0xF60E2A486Ac980B7e0F2822eAD4A4d8763B02EF8',
     image: '../static/logo/ethereum-eth-logo-1.svg',
     name: 'rinkeby',
-    price: 0.05,
+    price: 0.0005,
     chainId: '10001',
     unit: 'ETH'
   },
   '97': {
-    address: '0xCB3041291724B893E8BB3E876aC8f250D475685D',
+    address: '0x7dAa3Ea94eaf0D2ff903F7bc45dce9b9126f93c2',
     image: '../static/logo/dbanner1_copy_4_1.svg',
     name: 'bscscan',
-    price: 0.375,
+    price: 0.0005,
     chainId: '10002',
-    unit: 'BNB'
+    unit: 'TBNB'
   },
-  '43113': {
-    address: '0xd88af13d0f204156BFad1680E1199EbEd0487A07',
-    image: '../static/logo/dbanner1_copy_1.svg',
-    name: 'FUJI',
-    price: 2,
-    chainId: '10006',
-    unit: 'AVAX'
-  },
-  '80001': {
-    address: '0x864BA3671B20c2fD3Fe90788189e52Ef6D98fb65',
-    image: '../static/logo/dbanner1_copy_3_1.svg',
-    name: 'Mumbai',
-    price: 108,
-    chainId: '10009',
-    unit: 'MATIC'
-  },
-  '421611': {
-    address: '0x900501b343e8975b0ec4f1439f355f0bf15c7b9f',
-    image: '../static/logo/dbanner1_copy_2_1.svg',
-    name: 'Arbitrum',
-    price: 0.05,
-    chainId: '10010',
-    unit: 'ETH'
-  },
-  '4002': {
-    address: '0x484F40fC64D43fF7eECA7Ca51a801dB28A0F105d',
-    image: '../static/logo/fantom-ftm-logo-1.svg',
-    name: 'Fantom',
-    price: 130,
-    chainId: '10012',
-    unit: 'FTM'
-  },
-  '69': {
-    address: '0x5464Af1E4a6AF705920eD1CD0f4cb10638A89FD8',
-    image: '../static/logo/JtpX95Rt_400x400-1.svg',
-    name: 'Kovan',
-    price: 0.05,
-    chainId: '10011',
-    unit: 'ETH'
-  }
 }
 
 
-export default function Greg() {
+export default function Caveat() {
   const { connector, chainId, activate, deactivate, error, account, active } = useWeb3React()
 
   const router = useRouter()
@@ -126,7 +86,7 @@ export default function Greg() {
   }
 
   const increase = () => {
-    if(mintNum < 5) {
+    if(mintNum < 3) {
       setMintNum(mintNum + 1)
     }
   }
@@ -170,7 +130,7 @@ export default function Greg() {
 
   const mint = async () => {
     if(!checkConnect()) return
-    const tokenContract = getContract(addresses[selectedChainID].address, AdvancedONT.abi, library, account)
+    const tokenContract = getContract(addresses[selectedChainID].address, CaveatNFT.abi, library, account)
 
     let mintResult;
     setIsMinting(true);
@@ -219,7 +179,7 @@ export default function Greg() {
       if(!checkConnect()) return
       console.log(addresses[selectedChainID].name)
         console.log(addresses[toChain].name)
-      const tokenContract = getContract(addresses[selectedChainID].address, AdvancedONT.abi, library, account)
+      const tokenContract = getContract(addresses[selectedChainID].address, CaveatNFT.abi, library, account)
 
       const estimateFee = await tokenContract.estimateFeesSendNFT(addresses[toChain].chainId, transferNFT)
       const currentBalance = await library.getBalance(account);
@@ -239,7 +199,7 @@ export default function Greg() {
         setIsTransferring(false)
       }
       // add emit function after redploy the contract
-      const destination_contract = getContract(addresses[toChain].address, AdvancedONT.abi, library, account)
+      const destination_contract = getContract(addresses[toChain].address, CaveatNFT.abi, library, account)
       destination_contract.on("Transfer",(from , to , tokenID) => {
         if(to==account){
           toast.success(`${ addresses[selectedChainID].name } sent greg#${ tokenID } to ${ addresses[toChain].name}`,{
@@ -268,7 +228,7 @@ export default function Greg() {
     if(addresses[chainId]) {
       setOwnTokenisLoading(true)
       try{
-        const tokenContract = getContract(addresses[chainId].address, AdvancedONT.abi, library, account)
+        const tokenContract = getContract(addresses[chainId].address, CaveatNFT.abi, library, account)
 
         let result = await tokenContract.balanceOf(account);
         let token, tokenlist = [];
@@ -276,12 +236,10 @@ export default function Greg() {
           token = await tokenContract.tokenOfOwnerByIndex(account, i);
           tokenlist.push(Number(token));
         }
-  
-        setOwnToken(tokenlist);
-  
-        let max_mint = await tokenContract.MAX_MINT();
+        setOwnToken(tokenlist);  
+        let max_mint = await tokenContract.MAX_MINT_ETHEREUM();
         let nextId = await tokenContract.nextTokenId();
-  
+        console.log(max_mint)
         setTotalNFTCount(Number(max_mint));
         setNextTokenId(Number(nextId));
       } catch(error){
@@ -302,6 +260,7 @@ export default function Greg() {
           }
         ]      
       });
+      console.log(provider)
       setTransferNFT();
 
     } catch (addError) {
@@ -522,7 +481,7 @@ export default function Greg() {
     const calculateFee = async() => {
       try{
         if(transferNFT){
-          const tokenContract = getContract(addresses[selectedChainID].address, AdvancedONT.abi, library, account)
+          const tokenContract = getContract(addresses[selectedChainID].address, CaveatNFT.abi, library, account)
           const fee = await tokenContract.estimateFeesSendNFT(addresses[toChain].chainId, transferNFT)
           setEstimateFee((BigNumber.from(fee)/(BigNumber.from(10).pow(18))*1.1).toFixed(10)+addresses[selectedChainID].unit)
         } else {
@@ -629,11 +588,6 @@ export default function Greg() {
             <select className="block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded-[6px] leading-tight focus:outline-none focus:bg-white focus:border-gray-500" id="grid-state" value={toChain} onChange={(e) => setToChain(e.target.value)}>
               <option value='4'>Rinkeby</option>
               <option value='97'>Bscscan</option>
-              <option value='43113'>Snowtrace</option>
-              <option value='80001'>Polygonscan</option>
-              <option value='421611'>Arbiscan</option>
-              <option value='4002'>Ftmscan</option>
-              <option value='69'>Kovan</option>
             </select>
             <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
               <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>

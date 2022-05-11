@@ -1,3 +1,5 @@
+//SPDX-License-Identifier: MIT
+
 /**
  *Submitted for verification at Etherscan.io on 2022-04-05
 */
@@ -1532,14 +1534,14 @@ abstract contract NonblockingReceiver is Ownable, ILayerZeroReceiver {
     }
 }
 
-// File: contracts/Caveat-eth.sol
+// File: contracts/Caveat.sol
 
 pragma solidity ^0.8.7;
 
 contract Caveat is Ownable, ERC721, NonblockingReceiver {
     address public _owner;
     string private baseURI;
-    uint256 nextTokenId = 6512;
+    uint256 nextTokenId = 0;
     uint256 MAX_MINT_ETHEREUM = 10000;
 
     uint256 gasForDestinationLzReceive = 350000;
@@ -1556,10 +1558,10 @@ contract Caveat is Ownable, ERC721, NonblockingReceiver {
     // you can choose to mint 1 or 2
     // mint is free, but payments are accepted
     function mint(uint8 numTokens) external payable {
-        require(numTokens < 3, "tiny dinos: Max 2 NFTs per transaction");
+        require(numTokens < 3, "Caveat: Max 2 NFTs per transaction");
         require(
             nextTokenId + numTokens <= MAX_MINT_ETHEREUM,
-            "tiny dinos: Mint exceeds supply"
+            "Caveat: Mint exceeds supply"
         );
         _safeMint(msg.sender, ++nextTokenId);
         if (numTokens == 2) {
@@ -1604,7 +1606,7 @@ contract Caveat is Ownable, ERC721, NonblockingReceiver {
 
         require(
             msg.value >= messageFee,
-            "tiny dinos: msg.value not enough to cover messageFee. Send gas for message fees"
+            "Caveat: msg.value not enough to cover messageFee. Send gas for message fees"
         );
 
         endpoint.send{value: msg.value}(
@@ -1628,7 +1630,7 @@ contract Caveat is Ownable, ERC721, NonblockingReceiver {
     // This allows the devs to receive kind donations
     function withdraw(uint256 amt) external onlyOwner {
         (bool sent, ) = payable(_owner).call{value: amt}("");
-        require(sent, "tiny dinos: Failed to withdraw Ether");
+        require(sent, "Caveat: Failed to withdraw Ether");
     }
 
     // just in case this fixed variable limits us from future integrations

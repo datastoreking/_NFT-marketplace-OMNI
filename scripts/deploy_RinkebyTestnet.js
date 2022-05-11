@@ -1,14 +1,14 @@
 const hre = require("hardhat");
 async function main() {
-  const OmniChainNFT = await hre.ethers.getContractFactory("OmniChainNFT");
-  const omniChainNFT = await OmniChainNFT.deploy(
+  const Caveat = await hre.ethers.getContractFactory("Caveat");
+  const CaveatContract = await Caveat.deploy(
     "",
     "0x79a63d6d8BBD5c6dfc774dA79bCcD948EAcb53FA"
   );
-  await omniChainNFT.deployed();
+  await CaveatContract.deployed();
   console.log(
-    "Rinkeby testnet ----- omniChainNFT deployed to:",
-    omniChainNFT.address
+    "Rinkeby testnet ----- CaveatContract deployed to:",
+    CaveatContract.address
   );
 }
 main().catch((error) => {

@@ -1,6 +1,6 @@
 # Instructions
 
-## Omniverse DAO and Omni Wars website
+## Caveat NFT marketplace
 
 Inspiration: [LayerZero website](https://layerzero.network/)
 

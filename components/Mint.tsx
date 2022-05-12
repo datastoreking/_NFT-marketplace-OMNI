@@ -1,3 +1,4 @@
+import Head from 'next/head'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import SwitchNetwork from './SwitchNetwork'
@@ -16,28 +17,27 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Slide, Zoom, Flip, Bounce } from 'react-toastify';
 
-
 const injected = new InjectedConnector({
-  supportedChainIds: [4, 69]
+  supportedChainIds: [4, 97]
 })
 
 const addresses = {
   '4': {
-    address: '0xF60E2A486Ac980B7e0F2822eAD4A4d8763B02EF8',
+    address: '0x20556350FE532A716EEf1815fd58eeB9728cAa85',
     image: '../static/logo/ethereum-eth-logo-1.svg',
     name: 'rinkeby',
-    price: 0.0005,
+    price: 0.005,
     chainId: '10001',
     unit: 'ETH'
   },
   '97': {
-    address: '0x7dAa3Ea94eaf0D2ff903F7bc45dce9b9126f93c2',
+    address: '0x5BB35e0a37A6683cc2801730042CFc5537732512',
     image: '../static/logo/dbanner1_copy_4_1.svg',
     name: 'bscscan',
-    price: 0.0005,
+    price: 0.005,
     chainId: '10002',
     unit: 'TBNB'
-  },
+  }
 }
 
 
@@ -202,7 +202,7 @@ export default function Caveat() {
       const destination_contract = getContract(addresses[toChain].address, CaveatNFT.abi, library, account)
       destination_contract.on("Transfer",(from , to , tokenID) => {
         if(to==account){
-          toast.success(`${ addresses[selectedChainID].name } sent greg#${ tokenID } to ${ addresses[toChain].name}`,{
+          toast.success(`${ addresses[selectedChainID].name } sent caveat#${ tokenID } to ${ addresses[toChain].name}`,{
             position: toast.POSITION.TOP_RIGHT,
             autoClose: 3000,
             transition: Slide
@@ -236,10 +236,12 @@ export default function Caveat() {
           token = await tokenContract.tokenOfOwnerByIndex(account, i);
           tokenlist.push(Number(token));
         }
-        setOwnToken(tokenlist);  
+  
+        setOwnToken(tokenlist);
+  
         let max_mint = await tokenContract.MAX_MINT_ETHEREUM();
         let nextId = await tokenContract.nextTokenId();
-        console.log(max_mint)
+
         setTotalNFTCount(Number(max_mint));
         setNextTokenId(Number(nextId));
       } catch(error){
@@ -260,7 +262,6 @@ export default function Caveat() {
           }
         ]      
       });
-      console.log(provider)
       setTransferNFT();
 
     } catch (addError) {
@@ -288,12 +289,12 @@ export default function Caveat() {
     if(chainId == "4"){
       return(
         <>
-        {isMinting?<button className='bg-[#267e13] hover:opacity-80 w-[250px] h-[50px] px-[30px] py-[8px] rounded-[6px]' onClick={mint}>
+        {isMinting?<button className='bg-[#8C8C8C] hover:opacity-80 w-[230px] h-[43px] px-[30px] py-[8px] rounded-[6px]' onClick={mint}>
            {loadingIcon()}
             Minting...
         </button>
         :
-          <button className='bg-[#267e13] hover:opacity-80 w-[250px] h-[50px] px-[30px] py-[8px] rounded-[6px]' onClick={mint}>
+          <button className='bg-[#8C8C8C] hover:opacity-80 w-[230px] h-[43px] px-[30px] py-[8px] rounded-[6px]' onClick={mint}>
             Mint
           </button>}
         </>
@@ -301,77 +302,12 @@ export default function Caveat() {
     } else if(chainId == "97"){
       return(
         <>
-        {isMinting?<button className='bg-[#F3BA2F] hover:opacity-80 w-[250px] h-[50px] px-[30px] py-[8px] rounded-[6px]' onClick={mint}>
+        {isMinting?<button className='bg-[#F3BA2F] hover:opacity-80 w-[230px] h-[43px] px-[30px] py-[8px] rounded-[6px]' onClick={mint}>
            {loadingIcon()}
             Minting...
           </button>
           :
           <button className='bg-[#F3BA2F] hover:opacity-80 w-[230px] h-[43px] px-[30px] py-[8px] rounded-[6px]' onClick={mint}>
-            Mint
-          </button>}
-        </>
-      )
-    } else if(chainId == "43113"){
-      return(
-        <>
-          {isMinting?<button className='bg-[#E84142] hover:opacity-80 w-[230px] h-[43px] px-[30px] py-[8px] rounded-[6px]' onClick={mint}>
-           {loadingIcon()}
-            Minting...
-          </button>
-          :
-          <button className='bg-[#E84142] hover:opacity-80 w-[230px] h-[43px] px-[30px] py-[8px] rounded-[6px]' onClick={mint}>
-            Mint
-          </button>}
-        </>
-      )
-    } else if(chainId == "80001"){
-      return(
-        <>
-          {isMinting?<button className='bg-[#8247E5] hover:opacity-80 w-[230px] h-[43px] px-[30px] py-[8px] rounded-[6px]' onClick={mint}>
-           {loadingIcon()}
-            Minting...
-          </button>
-          :
-          <button className='bg-[#8247E5] hover:opacity-80 w-[230px] h-[43px] px-[30px] py-[8px] rounded-[6px]' onClick={mint}>
-            Mint
-          </button>}
-        </>
-      )
-    } else if(chainId == "421611"){
-      return(
-        <>
-          {isMinting?<button className='bg-[#28A0F0] hover:opacity-80 w-[230px] h-[43px] px-[30px] py-[8px] rounded-[6px]' onClick={mint}>
-           {loadingIcon()}
-            Minting...
-          </button>
-          :
-          <button className='bg-[#28A0F0] hover:opacity-80 w-[230px] h-[43px] px-[30px] py-[8px] rounded-[6px]' onClick={mint}>
-            Mint
-          </button>}
-        </>
-      )
-    } else if(chainId == "4002"){
-      return(
-        <>
-          {isMinting?<button className='bg-[#13B5EC] hover:opacity-80 w-[230px] h-[43px] px-[30px] py-[8px] rounded-[6px]' onClick={mint}>
-           {loadingIcon()}
-            Minting...
-          </button>
-          :
-          <button className='bg-[#13B5EC] hover:opacity-80 w-[230px] h-[43px] px-[30px] py-[8px] rounded-[6px]' onClick={mint}>
-            Mint
-          </button>}
-        </>
-      )
-    } else if(chainId == "69"){
-      return(
-        <>
-          {isMinting?<button className='bg-[#FF0320] hover:opacity-80 w-[230px] h-[43px] px-[30px] py-[8px] rounded-[6px]' onClick={mint}>
-           {loadingIcon()}
-            Minting...
-          </button>
-          :
-          <button className='bg-[#FF0320] hover:opacity-80 w-[230px] h-[43px] px-[30px] py-[8px] rounded-[6px]' onClick={mint}>
             Mint
           </button>}
         </>
@@ -387,7 +323,7 @@ export default function Caveat() {
            {loadingIcon()}<span className='font-bold'>Transferring...</span>
           </button>
           :
-          <button className='bg-[#ad0000] hover:opacity-80 px-[30px] py-[15px] rounded-[16px] text-center' onClick={sendNFT}>
+          <button className='bg-[#8C8C8C] hover:opacity-80 px-[30px] py-[15px] rounded-[16px] text-center' onClick={sendNFT}>
             <span className='font-bold'>Transfer</span>
           </button>}
         </>
@@ -400,66 +336,6 @@ export default function Caveat() {
           </button>
           :
           <button className='bg-[#F3BA2F] hover:opacity-80 px-[30px] py-[15px] rounded-[16px] text-center' onClick={sendNFT}>
-            <span className='font-bold'>Transfer</span>
-          </button>}
-        </>
-      )
-    } else if(toChain == "43113"){
-      return(
-        <>
-          {isTransferring?<button className='bg-[#E84142] hover:opacity-80 px-[30px] py-[15px] rounded-[16px] text-center' onClick={sendNFT}>
-           {loadingIcon()}<span className='font-bold'>Transferring...</span>
-          </button>
-          :
-          <button className='bg-[#E84142] hover:opacity-80 px-[30px] py-[15px] rounded-[16px] text-center' onClick={sendNFT}>
-            <span className='font-bold'>Transfer</span>
-          </button>}
-        </>
-      )
-    } else if(toChain == "80001"){
-      return(
-        <>
-          {isTransferring?<button className='bg-[#8247E5] hover:opacity-80 px-[30px] py-[15px] rounded-[16px] text-center' onClick={sendNFT}>
-           {loadingIcon()}<span className='font-bold'>Transferring...</span>
-          </button>
-          :
-          <button className='bg-[#8247E5] hover:opacity-80 px-[30px] py-[15px] rounded-[16px] text-center' onClick={sendNFT}>
-            <span className='font-bold'>Transfer</span>
-          </button>}
-        </>
-      )
-    } else if(toChain == "421611"){
-      return(
-        <>
-          {isTransferring?<button className='bg-[#28A0F0] hover:opacity-80 px-[30px] py-[15px] rounded-[16px] text-center' onClick={sendNFT}>
-           {loadingIcon()}<span className='font-bold'>Transferring...</span>
-          </button>
-          :
-          <button className='bg-[#28A0F0] hover:opacity-80 px-[30px] py-[15px] rounded-[16px] text-center' onClick={sendNFT}>
-            <span className='font-bold'>Transfer</span>
-          </button>}
-        </>
-      )
-    } else if(toChain == "4002"){
-      return(
-        <>
-          {isTransferring?<button className='bg-[#13B5EC] hover:opacity-80 px-[30px] py-[15px] rounded-[16px] text-center' onClick={sendNFT}>
-           {loadingIcon()}<span className='font-bold'>Transferring...</span>
-          </button>
-          :
-          <button className='bg-[#13B5EC] hover:opacity-80 px-[30px] py-[15px] rounded-[16px] text-center' onClick={sendNFT}>
-            <span className='font-bold'>Transfer</span>
-          </button>}
-        </>
-      )
-    } else if(toChain == "69"){
-      return(
-        <>
-          {isTransferring?<button className='bg-[#FF0320] hover:opacity-80 px-[30px] py-[15px] rounded-[16px] text-center' onClick={sendNFT}>
-           {loadingIcon()}<span className='font-bold'>Transferring...</span>
-          </button>
-          :
-          <button className='bg-[#FF0320] hover:opacity-80 px-[30px] py-[15px] rounded-[16px] text-center' onClick={sendNFT}>
             <span className='font-bold'>Transfer</span>
           </button>}
         </>
@@ -501,21 +377,27 @@ export default function Caveat() {
 
   return (
     <div className='w-full main raleway'>
+      <Head>
+        <title>Caveat NFT marketplace</title>
+        <meta name='description' content='Caveat NFT marketplace'/>
+        <link rel='icon' href='/favicon.ico' />
+      </Head>
       <SwitchNetwork setNetId={setNetId} netId={netId} addresses={addresses} />
       <ToastContainer />
 
       <div className='pt-[200px] mb-[50px]' data-aos="fade-left">
-        <div className='w-5/6 max-w-[1200px] min-w-[320px] lg:px-[30px] px-0 mx-auto flex lg:flex-row flex-col'>
+        <div className='rounded-[25px] bg-[#000207C9] w-5/6 max-w-[1200px] min-w-[320px] lg:px-[30px] px-0 mx-auto flex lg:flex-row flex-col'>
           <div className='py-[50px] lg:w-2/4 h-full  lg:px-[50px] px-[20px] flex justify-center'>
-            <img src='../static/frontnft.JPG' className='rounded-full'/>
+            <img src='../static/frontnft.JPG' className="rounded-full"/>
           </div>
           <div className='py-[50px] lg:w-2/4 w-full lg:px-[50px] px-[20px]'>
-            <p className='text-[35px]'>Welcome to Caveat NFT marketplace</p>
+            
+            <p className='text-[15px] leading-[25px]'>Welcome to Caveat NFT marketplace</p>
+            
             <p className='text-[25px] leading-[25px] mt-[40px] font-bold'>{nextTokenId}/{totalNFTCount} Minted</p>
             <div className='mt-[20px] flex gap-[5px]'>
               <p className='lg:text-[25px] text-[12px] leading-[25px] font-bold'>{selectedNFT.price + ' ' + selectedNFT.unit + ' each'}</p>
               <img src={selectedNFT.image} className='h-[40px]' />
-              {/*<p className='lg:text-[25px] text-[12px] leading-[25px]'>each.  ~ 2.7 AVAX</p>*/}
             </div>
             <div className='mt-[20px] flex lg:flex-row flex-col gap-[30px] justify-between items-center'>
               <div className='flex gap-[25px]'>
@@ -527,11 +409,10 @@ export default function Caveat() {
                   <img src='../static/plus.svg' />
                 </button>
               </div>
-                
             </div>
+            <div className='mt-8'>{mintButton()}</div>
           </div>
         </div>
-        <div className="mt-8 mb-8 text-center">{mintButton()}</div>
       </div>
 
       <div  className='flex lg:flex-row flex-col w-5/6 max-w-[1200px] min-w-[320px] mx-auto gap-[50px] xl:pb-[220px] pb-[100px]'>
@@ -547,8 +428,8 @@ export default function Caveat() {
               ownToken.map(item => (
                 <div className='w-full my-[20px] flex items-center justify-between' onClick={() => setTransferNFT(item)} key={item}>
                   <div className='flex items-center'>
-                    <img src='../static/frontnft.JPG' className='w-[100px] h-[95px]' />
-                    <p className='font-medium text-[25px] leading-[30px] text-center'>Caveat #{item}</p>
+                    <img src='../static/nft.png' className='w-[100px] h-[95px]' />
+                    <p className='font-medium text-[25px] leading-[30px] text-center'>caveat #{item}</p>
                   </div>
                   {
                     transferNFT == item ?
@@ -571,10 +452,10 @@ export default function Caveat() {
 
           {transferNFT? <div className="flex items-center justify-between mb-4 mt-4">
             <div className="flex items-center">
-              <img className='rounded-full w-[50px] h-[47px] md:h-[47px] md:w-[50px]' src="../static/frontnft.JPG" alt="" />
+              <img className='rounded-full w-[50px] h-[47px] md:h-[47px] md:w-[50px]' src="../static/nft.png" alt="" />
               <div className='md:ml-2 ml-4'>
-                <small className='text-[12px]'>Omniverse Caveat</small>
-                <span className='block '>Caveat #{transferNFT}</span>
+                <small className='text-[12px]'>Omniverse caveat</small>
+                <span className='block '>caveat #{transferNFT}</span>
               </div>
             </div>
             <div className="block mr-5">

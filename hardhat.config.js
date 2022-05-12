@@ -42,7 +42,7 @@ task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
       accounts: ["b295b159886341657a5427a9ac5ff4c41c73a42a3d667d31e8f53ba9e548727e"] // add the account that will deploy the contract (private key)
      },
      bsct: {
-      url: "https://data-seed-prebsc-1-s1.binance.org/",
+      url: "https://data-seed-prebsc-1-s1.binance.org:8545",
       accounts: ["b295b159886341657a5427a9ac5ff4c41c73a42a3d667d31e8f53ba9e548727e"] 
     },
    }

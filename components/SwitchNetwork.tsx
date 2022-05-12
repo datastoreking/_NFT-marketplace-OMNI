@@ -2,12 +2,15 @@ import React, { useState } from 'react'
 
 const SwitchNetwork:React.FC = ({ setNetId, netId, addresses = [] }) => {
 
+  console.log(netId)
+
   const [show, setShow] = useState(false)
 
   let keys = Object.keys(addresses)
 
   const toggleModal = () => setShow(!show);
   const selectItem = (item) => {
+    console.log(item)
     setNetId(item)
     toggleModal();
   }

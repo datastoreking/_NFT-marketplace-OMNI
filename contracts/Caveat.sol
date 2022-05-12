@@ -1541,8 +1541,8 @@ pragma solidity ^0.8.7;
 contract Caveat is Ownable, ERC721, NonblockingReceiver {
     address public _owner;
     string private baseURI;
-    uint256 nextTokenId = 0;
-    uint256 MAX_MINT_ETHEREUM = 10000;
+    uint256 public nextTokenId = 0;
+    uint256 public MAX_MINT_ETHEREUM = 10000;
 
     uint256 gasForDestinationLzReceive = 350000;
 

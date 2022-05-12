@@ -176,53 +176,54 @@ export default function Caveat() {
       errorToast("Select NFT you want to transfer, please")
       return;
     }
-    try {
-      if(!checkConnect()) return
-      console.log(addresses[selectedChainID].name)
-        console.log(addresses[toChain].name)
-      const tokenContract = getContract(addresses[selectedChainID].address, CaveatNFT.abi, library, account)
+    console.log(addresses[selectedChainID].name)
+    console.log(addresses[toChain].name)
+    // try {
+    //   if(!checkConnect()) return
+      
+    //   const tokenContract = getContract(addresses[selectedChainID].address, CaveatNFT.abi, library, account)
 
-      const estimateFee = await tokenContract.estimateFeesSendNFT(addresses[toChain].chainId, transferNFT)
-      const currentBalance = await library.getBalance(account);
+    //   const estimateFee = await tokenContract.estimateFeesSendNFT(addresses[toChain].chainId, transferNFT)
+    //   const currentBalance = await library.getBalance(account);
 
-      if(Number(estimateFee) * 1.1 > Number(currentBalance)) {
-        errorToast("You don't have enough balance for transfer")
-        return;
-      }
-      let gasFee = BigNumber.from(estimateFee)/Math.pow(10,18)*1.1*Math.pow(10,18)
-      gasFee = gasFee - gasFee%1
-      setIsTransferring(true)
-      let mintResult = await tokenContract.sendNFT(addresses[toChain].chainId, transferNFT, {value: gasFee.toString()});
-      // please add the function to get the emit from the contract and call the getInfo()
-      const receipt = await mintResult.wait();
-      if(receipt!=null){
-        getInfo();
-        setIsTransferring(false)
-      }
-      // add emit function after redploy the contract
-      const destination_contract = getContract(addresses[toChain].address, CaveatNFT.abi, library, account)
-      destination_contract.on("Transfer",(from , to , tokenID) => {
-        if(to==account){
-          toast.success(`${ addresses[selectedChainID].name } sent caveat#${ tokenID } to ${ addresses[toChain].name}`,{
-            position: toast.POSITION.TOP_RIGHT,
-            autoClose: 3000,
-            transition: Slide
-          });
-          setIsTransferring(false)
-        }
-      })
+    //   if(Number(estimateFee) * 1.1 > Number(currentBalance)) {
+    //     errorToast("You don't have enough balance for transfer")
+    //     return;
+    //   }
+    //   let gasFee = BigNumber.from(estimateFee)/Math.pow(10,18)*1.1*Math.pow(10,18)
+    //   gasFee = gasFee - gasFee%1
+    //   setIsTransferring(true)
+    //   let mintResult = await tokenContract.sendNFT(addresses[toChain].chainId, transferNFT, {value: gasFee.toString()});
+    //   // please add the function to get the emit from the contract and call the getInfo()
+    //   const receipt = await mintResult.wait();
+    //   if(receipt!=null){
+    //     getInfo();
+    //     setIsTransferring(false)
+    //   }
+    //   // add emit function after redploy the contract
+    //   const destination_contract = getContract(addresses[toChain].address, CaveatNFT.abi, library, account)
+    //   destination_contract.on("Transfer",(from , to , tokenID) => {
+    //     if(to==account){
+    //       toast.success(`${ addresses[selectedChainID].name } sent caveat#${ tokenID } to ${ addresses[toChain].name}`,{
+    //         position: toast.POSITION.TOP_RIGHT,
+    //         autoClose: 3000,
+    //         transition: Slide
+    //       });
+    //       setIsTransferring(false)
+    //     }
+    //   })
 
       
-    } catch (e) {
-      if(e["code"] == 4001){
-        errorToast(e["message"].split(":")[1])
-      } else {
-        console.log(e)
-        // change the error message after confrim it
-        errorToast("Sending NFT error, Please try again")
-      }
-      setIsTransferring(false)
-    }
+    // } catch (e) {
+    //   if(e["code"] == 4001){
+    //     errorToast(e["message"].split(":")[1])
+    //   } else {
+    //     console.log(e)
+    //     // change the error message after confrim it
+    //     errorToast("Sending NFT error, Please try again")
+    //   }
+    //   setIsTransferring(false)
+    // }
   }
 
   const getInfo = async () => {
@@ -230,18 +231,22 @@ export default function Caveat() {
       setOwnTokenisLoading(true)
       try{
         const tokenContract = getContract(addresses[chainId].address, CaveatNFT.abi, library, account)
-
+        
         let result = await tokenContract.balanceOf(account);
-        let token, tokenlist = [];
-        for (var i = 0; i < Number(result); i++) {
-          token = await tokenContract.tokenOfOwnerByIndex(account, i);
-          tokenlist.push(Number(token));
-        }
-  
+        
+        let tokenlist = [];
+        // for (var i = 0; i < Number(result); i++) {
+        //   token = await tokenContract.tokenOfOwnerByIndex(account, i);
+        //   tokenlist.push(Number(token));
+        // }
+        tokenlist.push(Number(result));
+        console.log(tokenlist)
+
         setOwnToken(tokenlist);
   
         let max_mint = await tokenContract.MAX_MINT_ETHEREUM();
         let nextId = await tokenContract.nextTokenId();
+        console.log(Number(max_mint));
 
         setTotalNFTCount(Number(max_mint));
         setNextTokenId(Number(nextId));
@@ -323,7 +328,7 @@ export default function Caveat() {
     if(toChain == "4"){
       return(
         <>
-          {isTransferring?<button className='bg-[#8C8C8C] hover:opacity-80 px-[30px] py-[15px] rounded-[16px] text-center' onClick={sendNFT}>
+          {isTransferring ? <button className='bg-[#8C8C8C] hover:opacity-80 px-[30px] py-[15px] rounded-[16px] text-center' onClick={sendNFT}>
            {loadingIcon()}<span className='font-bold'>Transferring...</span>
           </button>
           :
@@ -335,7 +340,7 @@ export default function Caveat() {
     } else if(toChain == "97"){
       return(
         <>
-          {isTransferring?<button className='bg-[#F3BA2F] hover:opacity-80 px-[30px] py-[15px] rounded-[16px] text-center' onClick={sendNFT}>
+          {isTransferring ? <button className='bg-[#F3BA2F] hover:opacity-80 px-[30px] py-[15px] rounded-[16px] text-center' onClick={sendNFT}>
            {loadingIcon()}<span className='font-bold'>Transferring...</span>
           </button>
           :
@@ -432,8 +437,8 @@ export default function Caveat() {
               ownToken.map(item => (
                 <div className='w-full my-[20px] flex items-center justify-between' onClick={() => setTransferNFT(item)} key={item}>
                   <div className='flex items-center'>
-                    <img src='../static/nft.png' className='w-[100px] h-[95px]' />
-                    <p className='font-medium text-[25px] leading-[30px] text-center'>caveat #{item}</p>
+                    <img src='../static/frontnft.JPG' className='w-[100px] h-[95px] rounded-full' />
+                    <p className='font-medium text-[25px] leading-[30px] text-center ml-4'>caveat #{item}</p>
                   </div>
                   {
                     transferNFT == item ?
@@ -456,14 +461,13 @@ export default function Caveat() {
 
           {transferNFT? <div className="flex items-center justify-between mb-4 mt-4">
             <div className="flex items-center">
-              <img className='rounded-full w-[50px] h-[47px] md:h-[47px] md:w-[50px]' src="../static/nft.png" alt="" />
+              <img className='rounded-full w-[50px] h-[47px] md:h-[47px] md:w-[50px]' src="../static/frontnft.JPG" alt="" />
               <div className='md:ml-2 ml-4'>
-                <small className='text-[12px]'>Omniverse caveat</small>
                 <span className='block '>caveat #{transferNFT}</span>
               </div>
             </div>
             <div className="block mr-5">
-              <img src='../static/transfer-icon.png' alt="icon" />
+              <img src='../static/transfer-icon.png' alt="icon" className='ml-2' />
             </div>
           </div> : null}
           
@@ -480,7 +484,7 @@ export default function Caveat() {
           </div>
           <div className='absolute flex flex-col bottom-[20px] transfer-bottom'>
             <div className='flex flex-row w-full justify-between'>
-              <p className='text-[13px] leading-[15px]'>Fee</p>
+              <p className='text-[13px] leading-[10px]'>Fee</p>
               <p className='text-[13px] leading-[15px]'>{estimateFee}</p>
             </div>
             {transferButton()}

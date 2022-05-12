@@ -43,7 +43,6 @@ const addresses = {
 
 export default function Caveat() {
   const { connector, chainId, activate, deactivate, error, account, active } = useWeb3React()
-
   const router = useRouter()
   const [mintNum, setMintNum] = useState(1)
   const [toChain, setToChain] = useState('4')
@@ -464,7 +463,7 @@ export default function Caveat() {
         <div data-aos="fade-up" className='rounded-[25px] lg:w-1/4 w-full bg-[#000207C9] p-[30px] h-[450px]  relative'>
           <p className='text-[25px] leading-[30px] font-bold m-0 text-center'>Transfer NFTs</p>
 
-          {transferNFT? <div className="flex items-center justify-between mb-4 mt-4">
+          {transferNFT != undefined ? <div className="flex items-center justify-between mb-4 mt-4">
             <div className="flex items-center">
               <img className='rounded-full w-[50px] h-[47px] md:h-[47px] md:w-[50px]' src="../static/frontnft.JPG" alt="" />
               <div className='md:ml-2 ml-4'>

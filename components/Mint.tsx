@@ -178,6 +178,20 @@ export default function Caveat() {
     }
     console.log(addresses[selectedChainID].name)
     console.log(addresses[toChain].name)
+    try{
+      if(!checkConnect()) return
+      const tokenContract = getContract(addresses[selectedChainID].address, CaveatNFT.abi, library, account);
+      let sentResult = await tokenContract.traverseChains(addresses[toChain].chainId, transferNFT, {value: gasFee.toString()});
+    } catch (e) {
+        if(e["code"] == 4001){
+          errorToast(e["message"].split(":")[1])
+        } else {
+          console.log(e)
+          // change the error message after confrim it
+          errorToast("Sending NFT error, Please try again")
+        }
+        setIsTransferring(false)
+      }
     // try {
     //   if(!checkConnect()) return
       
@@ -231,23 +245,14 @@ export default function Caveat() {
       setOwnTokenisLoading(true)
       try{
         const tokenContract = getContract(addresses[chainId].address, CaveatNFT.abi, library, account)
-        
         let result = await tokenContract.balanceOf(account);
-        
         let tokenlist = [];
-        // for (var i = 0; i < Number(result); i++) {
-        //   token = await tokenContract.tokenOfOwnerByIndex(account, i);
-        //   tokenlist.push(Number(token));
-        // }
-        tokenlist.push(Number(result));
-        console.log(tokenlist)
-
+        for (var i = 0; i < Number(result); i++) {
+          tokenlist.push(Number(i));
+        }
         setOwnToken(tokenlist);
-  
         let max_mint = await tokenContract.MAX_MINT_ETHEREUM();
         let nextId = await tokenContract.nextTokenId();
-        console.log(Number(max_mint));
-
         setTotalNFTCount(Number(max_mint));
         setNextTokenId(Number(nextId));
       } catch(error){
@@ -362,27 +367,27 @@ export default function Caveat() {
     switchNetwork()
   }, [netId])
 
-  useEffect(() => {
-    const calculateFee = async() => {
-      try{
-        if(transferNFT){
-          const tokenContract = getContract(addresses[selectedChainID].address, CaveatNFT.abi, library, account)
-          const fee = await tokenContract.estimateFeesSendNFT(addresses[toChain].chainId, transferNFT)
-          setEstimateFee((BigNumber.from(fee)/(BigNumber.from(10).pow(18))*1.1).toFixed(10)+addresses[selectedChainID].unit)
-        } else {
-          setEstimateFee("")
-        }
-      } catch(error){
-        if(selectedChainID == toChain){
-          errorToast(`${addresses[toChain].name} is currently unavailable for transfer`)
-        } else {
-          errorToast("Please Check the Internet Connection!!!")
-        }
+  // useEffect(() => {
+  //   const calculateFee = async() => {
+  //     try{
+  //       if(transferNFT){
+  //         const tokenContract = getContract(addresses[selectedChainID].address, CaveatNFT.abi, library, account)
+  //         const fee = await tokenContract.estimateFeesSendNFT(addresses[toChain].chainId, transferNFT)
+  //         setEstimateFee((BigNumber.from(fee)/(BigNumber.from(10).pow(18))*1.1).toFixed(10)+addresses[selectedChainID].unit)
+  //       } else {
+  //         setEstimateFee("")
+  //       }
+  //     } catch(error){
+  //       if(selectedChainID == toChain){
+  //         errorToast(`${addresses[toChain].name} is currently unavailable for transfer`)
+  //       } else {
+  //         errorToast("Please Check the Internet Connection!!!")
+  //       }
 
-      }
-    }
-    calculateFee();
-  },[toChain,transferNFT])
+  //     }
+  //   }
+  //   calculateFee();
+  // },[toChain,transferNFT])
 
   return (
     <div className='w-full main raleway'>

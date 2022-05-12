@@ -131,43 +131,44 @@ export default function Caveat() {
   const mint = async () => {
     if(!checkConnect()) return
     const tokenContract = getContract(addresses[selectedChainID].address, CaveatNFT.abi, library, account)
+    console.log(mintNum)
+    await tokenContract.mint(mintNum)
+    // let mintResult;
+    // setIsMinting(true);
 
-    let mintResult;
-    setIsMinting(true);
+    // try {
+    //   let publicmintFlag = await tokenContract._publicSaleStarted();
+    //   let saleFlag = await tokenContract._saleStarted();
 
-    try {
-      let publicmintFlag = await tokenContract._publicSaleStarted();
-      let saleFlag = await tokenContract._saleStarted();
+    //   if(saleFlag && publicmintFlag) {
 
-      if(saleFlag && publicmintFlag) {
-
-        mintResult = await tokenContract.publicMint(mintNum, {value: ethers.utils.parseEther((addresses[selectedChainID].price*mintNum).toString())})
-        const receipt = await mintResult.wait();
-        if(receipt!=null){
-          setIsMinting(false);
-          getInfo();
-        }
-        // add the the function to get the emit from the contract and call the getInfo()
-      } else if (saleFlag) {
-        mintResult = await tokenContract.mint(mintNum, {value: ethers.utils.parseEther((addresses[selectedChainID].price*mintNum).toString())})
-        // add the the function to get the emit from the contract and call the getInfo()
-        const receipt = await mintResult.wait();
-        if(receipt!=null){
-          setIsMinting(false);
-          getInfo();
-        }
-      } else {
-        errorToast("Sale is not started yet")
-        setIsMinting(false);
-      }
-    } catch (e) {
-      if(e["code"] == 4001){
-        errorToast(e["message"].split(":")[1])
-      } else {
-        errorToast("Mint Error")
-      }
-      setIsMinting(false);
-    }
+    //     mintResult = await tokenContract.publicMint(mintNum, {value: ethers.utils.parseEther((addresses[selectedChainID].price*mintNum).toString())})
+    //     const receipt = await mintResult.wait();
+    //     if(receipt!=null){
+    //       setIsMinting(false);
+    //       getInfo();
+    //     }
+    //     // add the the function to get the emit from the contract and call the getInfo()
+    //   } else if (saleFlag) {
+    //     mintResult = await tokenContract.mint(mintNum, {value: ethers.utils.parseEther((addresses[selectedChainID].price*mintNum).toString())})
+    //     // add the the function to get the emit from the contract and call the getInfo()
+    //     const receipt = await mintResult.wait();
+    //     if(receipt!=null){
+    //       setIsMinting(false);
+    //       getInfo();
+    //     }
+    //   } else {
+    //     errorToast("Sale is not started yet")
+    //     setIsMinting(false);
+    //   }
+    // } catch (e) {
+    //   if(e["code"] == 4001){
+    //     errorToast(e["message"].split(":")[1])
+    //   } else {
+    //     errorToast("Mint Error")
+    //   }
+    //   setIsMinting(false);
+    // }
   }
 
   const sendNFT = async () => {
@@ -268,6 +269,7 @@ export default function Caveat() {
       errorToast("Switching network error, please try again")
     }
   }
+
   const loadingIcon = () => {
     return(
       <>
@@ -278,6 +280,7 @@ export default function Caveat() {
       </>
     );
   }
+
   const errorToast = (error : String) =>{
     toast.error(error,{
       position: toast.POSITION.BOTTOM_RIGHT,
@@ -285,6 +288,7 @@ export default function Caveat() {
       transition: Slide
     });
   }
+
   const mintButton = () => {
     if(chainId == "4"){
       return(

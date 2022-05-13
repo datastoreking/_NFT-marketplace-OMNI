@@ -23,7 +23,7 @@ const injected = new InjectedConnector({
 
 const addresses = {
   '4': {
-    address: '0x20556350FE532A716EEf1815fd58eeB9728cAa85',
+    address: '0xB4FfD921c65C1acDaf0B0e3be1573B1aea191CA7',
     image: '../static/logo/ethereum-eth-logo-1.svg',
     name: 'rinkeby',
     price: 0.005,
@@ -31,7 +31,7 @@ const addresses = {
     unit: 'ETH'
   },
   '97': {
-    address: '0x5BB35e0a37A6683cc2801730042CFc5537732512',
+    address: '0x20556350FE532A716EEf1815fd58eeB9728cAa85',
     image: '../static/logo/dbanner1_copy_4_1.svg',
     name: 'bscscan',
     price: 0.005,
@@ -85,7 +85,7 @@ export default function Caveat() {
   }
 
   const increase = () => {
-    if(mintNum < 3) {
+    if(mintNum < 2) {
       setMintNum(mintNum + 1)
     }
   }
@@ -131,7 +131,12 @@ export default function Caveat() {
     if(!checkConnect()) return
     const tokenContract = getContract(addresses[selectedChainID].address, CaveatNFT.abi, library, account)
     console.log(mintNum)
-    await tokenContract.mint(mintNum)
+    let mintResult = await tokenContract.mint(mintNum)
+    const receipt = await mintResult.wait();
+    console.log(receipt)
+    if(receipt!=null){
+      getInfo();
+    }
     // let mintResult;
     // setIsMinting(true);
 
@@ -171,72 +176,56 @@ export default function Caveat() {
   }
 
   const sendNFT = async () => {
-    if(!transferNFT){
+    if(transferNFT == undefined){
       errorToast("Select NFT you want to transfer, please")
       return;
     }
     console.log(addresses[selectedChainID].name)
     console.log(addresses[toChain].name)
-    try{
+  
+    try {
       if(!checkConnect()) return
-      const tokenContract = getContract(addresses[selectedChainID].address, CaveatNFT.abi, library, account);
-      let sentResult = await tokenContract.traverseChains(addresses[toChain].chainId, transferNFT, {value: gasFee.toString()});
-    } catch (e) {
-        if(e["code"] == 4001){
-          errorToast(e["message"].split(":")[1])
-        } else {
-          console.log(e)
-          // change the error message after confrim it
-          errorToast("Sending NFT error, Please try again")
-        }
+      const tokenContract = getContract(addresses[selectedChainID].address, CaveatNFT.abi, library, account)
+
+      const estimateFee = await tokenContract.estimateFeesSendNFT(addresses[toChain].chainId, transferNFT)
+      const currentBalance = await library.getBalance(account);
+
+      if(Number(estimateFee) * 1.1 > Number(currentBalance)) {
+        errorToast("You don't have enough balance for transfer")
+        return;
+      }
+      let gasFee = BigNumber.from(estimateFee)/Math.pow(10,18)*1.1*Math.pow(10,18)
+      gasFee = gasFee - gasFee%1
+      setIsTransferring(true)
+      let mintResult = await tokenContract.sendNFT(addresses[toChain].chainId, transferNFT, {value: gasFee.toString()});
+      // please add the function to get the emit from the contract and call the getInfo()
+      const receipt = await mintResult.wait();
+      if(receipt!=null){
+        getInfo();
         setIsTransferring(false)
       }
-    // try {
-    //   if(!checkConnect()) return
-      
-    //   const tokenContract = getContract(addresses[selectedChainID].address, CaveatNFT.abi, library, account)
-
-    //   const estimateFee = await tokenContract.estimateFeesSendNFT(addresses[toChain].chainId, transferNFT)
-    //   const currentBalance = await library.getBalance(account);
-
-    //   if(Number(estimateFee) * 1.1 > Number(currentBalance)) {
-    //     errorToast("You don't have enough balance for transfer")
-    //     return;
-    //   }
-    //   let gasFee = BigNumber.from(estimateFee)/Math.pow(10,18)*1.1*Math.pow(10,18)
-    //   gasFee = gasFee - gasFee%1
-    //   setIsTransferring(true)
-    //   let mintResult = await tokenContract.sendNFT(addresses[toChain].chainId, transferNFT, {value: gasFee.toString()});
-    //   // please add the function to get the emit from the contract and call the getInfo()
-    //   const receipt = await mintResult.wait();
-    //   if(receipt!=null){
-    //     getInfo();
-    //     setIsTransferring(false)
-    //   }
-    //   // add emit function after redploy the contract
-    //   const destination_contract = getContract(addresses[toChain].address, CaveatNFT.abi, library, account)
-    //   destination_contract.on("Transfer",(from , to , tokenID) => {
-    //     if(to==account){
-    //       toast.success(`${ addresses[selectedChainID].name } sent caveat#${ tokenID } to ${ addresses[toChain].name}`,{
-    //         position: toast.POSITION.TOP_RIGHT,
-    //         autoClose: 3000,
-    //         transition: Slide
-    //       });
-    //       setIsTransferring(false)
-    //     }
-    //   })
-
-      
-    // } catch (e) {
-    //   if(e["code"] == 4001){
-    //     errorToast(e["message"].split(":")[1])
-    //   } else {
-    //     console.log(e)
-    //     // change the error message after confrim it
-    //     errorToast("Sending NFT error, Please try again")
-    //   }
-    //   setIsTransferring(false)
-    // }
+      // add emit function after redploy the contract
+      const destination_contract = getContract(addresses[toChain].address, AdvancedONT.abi, library, account)
+      destination_contract.on("Transfer",(from , to , tokenID) => {
+        if(to==account){
+          toast.success(`${ addresses[selectedChainID].name } sent greg#${ tokenID } to ${ addresses[toChain].name}`,{
+            position: toast.POSITION.TOP_RIGHT,
+            autoClose: 3000,
+            transition: Slide
+          });
+          setIsTransferring(false)
+        }
+      })
+    } catch (e) {
+      if(e["code"] == 4001){
+        errorToast(e["message"].split(":")[1])
+      } else {
+        console.log(e)
+        // change the error message after confrim it
+        errorToast("Sending NFT error, Please try again")
+      }
+      setIsTransferring(false)
+    }
   }
 
   const getInfo = async () => {

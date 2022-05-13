@@ -1569,6 +1569,16 @@ contract Caveat is Ownable, ERC721, NonblockingReceiver {
         }
     }
 
+    function estimateFeesSendNFT(uint16 _chainId, uint _id) public view returns (uint fees) {
+        require(trustedRemoteLookup[_chainId].length > 0, "This chain is currently unavailable for transfer");
+        // abi.encode() the payload with the values to send
+        bytes memory payload = abi.encode(msg.sender, _id);
+        //abi encode a higher gas limit to pass to tx parameters
+        bytes memory parameters = abi.encodePacked(uint16(1),gasForDestinationLzReceive);
+        (uint nativeFee, ) = endpoint.estimateFees(_chainId, address(this), payload, false, parameters);
+        return nativeFee;
+    }
+
     // This function transfers the nft from your address on the
     // source chain to the same address on the destination chain
     function traverseChains(uint16 _chainId, uint256 tokenId) public payable {
